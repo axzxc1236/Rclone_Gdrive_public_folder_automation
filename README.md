@@ -10,7 +10,7 @@ I need to copy many publically shared Google Drive folder with rclone, you might
 1. Install [Node.js](https://nodejs.org/en/download/)
 2. replace rclone.conf file with working one. (use "rclone config file" command to find where it's located.)
 3. Make sure rclone.conf starts with a drive remote, or at least conrains a drive remote, with a working token.
-4. modify filelist.txt with following format
+4. modify filelist.txt with following format (can be a multiline file)
 > (public folder ID)===(destination)
 
 > for example [https://drive.google.com/drive/folders/1N7rmP_1y4eo8bc75muJQPHXss-GgR1ja](https://drive.google.com/drive/folders/1N7rmP_1y4eo8bc75muJQPHXss-GgR1ja) has the folder ID 1N7rmP_1y4eo8bc75muJQPHXss-GgR1ja
