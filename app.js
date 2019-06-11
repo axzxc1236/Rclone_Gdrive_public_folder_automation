@@ -50,6 +50,7 @@ function readFileList() {
 }
 
 function downloadFile(index) {
+	console.log("Copying Folder " + folderIDList[index] + " to " + destinationList[index]);
 	//copy a config file with different folder ID
 	if (fs.existsSync(modified_config))
 		fs.unlinkSync(modified_config)
