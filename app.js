@@ -133,7 +133,4 @@ function readTokensFromModifiedConfig() {
 	}
 }
 
-//Try to read new token before doing anything incase the script terminated with error last time.
-if (fs.existsSync(modified_config))
-	readTokensFromModifiedConfig();
-readTokenFromOriginalConfig(); //This function should be called once and only once when you start the script.
+readTokenFromOriginalConfig();
