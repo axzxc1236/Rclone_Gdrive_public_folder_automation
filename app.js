@@ -91,9 +91,9 @@ function downloadFile(index) {
 		} else if (index == folderIDList.length) {
 			console.log("I think we are done.");
 		} else {
-			readTokensFromModifiedConfig();
 			downloadFile(index+1);
 		}
+		readTokensFromModifiedConfig();
 	});
 	//
 }
