@@ -9,7 +9,7 @@ const original_config = "rclone.conf";
 const modified_config = "rclone_modified.conf";
 const rcloneCommand = "rclone"; //If you are using Windows and rclone.exe is not in path, you want to change that to something like "C:/rclone/rclone.exe"
 
-function readToken() {
+function readTokenFromOriginalConfig() {
 	let token = null;
 	try {
 		let configContent = fs.readFileSync(original_config, { encoding: "utf-8" }).split(/\r?\n/);
@@ -79,7 +79,7 @@ function downloadFile(index) {
 	//
 }
 
-var token = readToken();
+var token = readTokenFromOriginalConfig();
 if (token != null) {
 	readFileList();
 	if (!errorParsingFileList && folderIDList.length != 0) {
