@@ -11,14 +11,18 @@ const rcloneCommand = "rclone"; //If you are using Windows and rclone.exe is not
 const writeDebugFile = true;
 const debug_file_filename = "debug_file";
 
+var token = null;
+var token_expiry_time = null;
+
 function readTokenFromOriginalConfig() {
-	let token = null;
 	try {
 		let configContent = fs.readFileSync(original_config, { encoding: "utf-8" }).split(/\r?\n/);
 		for (let i = 0; i < configContent.length; i++) {
 			if (configContent[i].startsWith("token = ")) {
 				token = configContent[i].replace("token = ", "");
-				console.log("token=  " + token);
+				token_expiry_time = Date.parse(JSON.parse(token).expiry)
+				console.log("token: " + token);
+				console.log("token expiry time: " + token_expiry_time);
 				//Debug
 				if (writeDebugFile)
 					fs.appendFileSync(debug_file_filename, Date() + "  " + token + EOL);
@@ -28,7 +32,15 @@ function readTokenFromOriginalConfig() {
 	} catch (e) {
 		console.log("encountered error trying to read token:  " + e);
 	}
-	return token;
+
+	if (token != null) {
+		//starts downloading
+		readFileList();
+		if (!errorParsingFileList && folderIDList.length != 0) {
+			console.log("Good to go.");
+			downloadFile(0);
+		}
+	}
 }
 
 var folderIDList = [];
@@ -96,9 +108,11 @@ function readTokensFromModifiedConfig() {
 		for (let i = 0; i < modifiedConfigContent.length; i++) {
 			if (modifiedConfigContent[i].startsWith("token = ")) {
 				let tmp_token = modifiedConfigContent[i].replace("token = ", "");
-				if (token != tmp_token) {
+				let tmp_token_expiry_time = Date.parse(JSON.parse(tmp_token).expiry)
+				if (token != tmp_token && tmp_token_expiry_time > token_expiry_time) {
 					console.log("I found a new token: " + tmp_token);
-					console.log("old one is: " + token);
+					console.log("old token is: " + token);
+					console.log("new token expiry time: " + tmp_token_expiry_time);
 					//Debug
 					if (writeDebugFile)
 						fs.appendFileSync(debug_file_filename,
@@ -119,11 +133,4 @@ function readTokensFromModifiedConfig() {
 	}
 }
 
-var token = readTokenFromOriginalConfig();
-if (token != null) {
-	readFileList();
-	if (!errorParsingFileList && folderIDList.length != 0) {
-		console.log("Good to go.");
-		downloadFile(0);
-	}
-}
+readTokenFromOriginalConfig();
