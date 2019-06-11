@@ -85,6 +85,7 @@ function downloadFile(index) {
 	const rclone = spawn(rcloneCommand, ["--config", modified_config, "-P", "copy", "tmp:", destinationList[index]], { stdio: 'inherit' });
 
 	rclone.on('close', (code) => {
+		readTokensFromModifiedConfig();
 		console.log("child process exited with code" + code);
 		if (code != 0) {
 			console.log("encountered an error, not continuing.");
@@ -93,7 +94,6 @@ function downloadFile(index) {
 		} else {
 			downloadFile(index+1);
 		}
-		readTokensFromModifiedConfig();
 	});
 	//
 }
