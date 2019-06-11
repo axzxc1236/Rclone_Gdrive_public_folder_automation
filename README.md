@@ -24,3 +24,5 @@ I need to copy many publically shared Google Drive folder with rclone, you might
 ## Note
 
 If you don't have rclone(.exe) in your path environment variable, you need to change "rcloneCommand" in app.js to something like "C:/rclone/rclone.exe" or wherever rclone is located.
+
+**Sometimes you will get error messages in rclone and.... it might be fine**, there is [a issue that requires better fix but now have workaround](https://github.com/axzxc1236/Rclone_Gdrive_public_folder_automation/issues/1).
