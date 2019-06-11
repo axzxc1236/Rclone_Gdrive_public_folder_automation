@@ -10,6 +10,7 @@ const modified_config = "rclone_modified.conf";
 const rcloneCommand = "rclone"; //If you are using Windows and rclone.exe is not in path, you want to change that to something like "C:/rclone/rclone.exe"
 const writeDebugFile = true;
 const debug_file_filename = "debug_file";
+const amounts_of_retries_before_giveup = 1; //It shouldn't need to be larger than 1
 
 var token = null;
 var token_expiry_time = null;
@@ -67,6 +68,7 @@ function readFileList() {
 	}
 }
 
+var downloadRetries = 0;
 function downloadFile(index) {
 	console.log("Copying Folder " + folderIDList[index] + " to " + destinationList[index]);
 	//copy a config file with different folder ID
@@ -88,10 +90,20 @@ function downloadFile(index) {
 		readTokensFromModifiedConfig();
 		console.log("child process exited with code" + code);
 		if (code != 0) {
-			console.log("encountered an error, not continuing.");
-		} else if (index == folderIDList.length) {
+			if (downloadRetries < amounts_of_retries_before_giveup) {
+				//Why retry is needed and what is this different from retry built into rclone:
+				//When rclone updates the token to your Google Drive remote, it didn't update tmp remote's token
+				//so you will get error messages because it can't read public shared folder...
+				//need to re-copy your Google Drive token to tmp remote.
+				downloadRetries++;
+				downloadFile(index);
+			} else {
+				console.log("encountered an error, not continuing.");
+			}
+		} else if (index+1 == folderIDList.length) {
 			console.log("I think we are done.");
 		} else {
+			downloadRetries = 0;
 			downloadFile(index+1);
 		}
 	});
@@ -133,4 +145,7 @@ function readTokensFromModifiedConfig() {
 	}
 }
 
-readTokenFromOriginalConfig();
+//Try to read new token before doing anything incase the script terminated with error last time.
+//if (fs.existsSync(modified_config))
+//	readTokensFromModifiedConfig();
+readTokenFromOriginalConfig(); //This function should be called once and only once when you start the script.
